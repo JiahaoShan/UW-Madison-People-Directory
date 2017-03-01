@@ -1,0 +1,198 @@
+<!doctype html>
+<html ng-app='app'>
+<head>
+	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+	<style type="text/css">
+		body {
+			width: 350px;
+		}
+		#container {
+			padding: 10px;
+			height: 200px;
+			width: 350px;
+			font-family: Helvetica, Ubuntu, Arial, sans-serif;
+		}
+		/* form starting stylings ------------------------------- */
+		.group { 
+			position:relative; 
+			margin-bottom:15px; 
+		}
+		input {
+			font-size:18px;
+			padding:10px 10px 10px 5px;
+			display:block;
+			width:320px;
+			border:none;
+			border-bottom:1px solid #757575;
+		}
+		input:focus 		{ outline:none; }
+
+		/* LABEL ======================================= */
+		label 				 {
+			background: rgba(255,255,255,0);
+			color:#999; 
+			font-size:18px;
+			font-weight:normal;
+			position:absolute;
+			pointer-events:none;
+			left:5px;
+			top:10px;
+			transition:0.2s ease all; 
+			-moz-transition:0.2s ease all; 
+			-webkit-transition:0.2s ease all;
+		}
+
+		/* active state */
+		input:focus ~ label, input:valid ~ label 		{
+			top:-20px;
+			font-size:14px;
+			color:#5264AE;
+		}
+
+		/* BOTTOM BARS ================================= */
+		.bar 	{ position:relative; display:block; width:320px; }
+		.bar:before, .bar:after 	{
+			content:'';
+			height:2px; 
+			width:0;
+			bottom:1px; 
+			position:absolute;
+			background:#5264AE; 
+			transition:0.2s ease all; 
+			-moz-transition:0.2s ease all; 
+			-webkit-transition:0.2s ease all;
+		}
+		.bar:before {
+			left:50%;
+		}
+		.bar:after {
+			right:50%; 
+		}
+
+		/* active state */
+		input:focus ~ .bar:before, input:focus ~ .bar:after {
+			width:50%;
+		}
+
+		/* HIGHLIGHTER ================================== */
+		.highlight {
+			position:absolute;
+			height:60%; 
+			width:100px; 
+			top:25%; 
+			left:0;
+			pointer-events:none;
+			opacity:0.5;
+		}
+
+		/* active state */
+		input:focus ~ .highlight {
+			-webkit-animation:inputHighlighter 0.3s ease;
+			-moz-animation:inputHighlighter 0.3s ease;
+			animation:inputHighlighter 0.3s ease;
+		}
+
+		/* ANIMATIONS ================ */
+		@-webkit-keyframes inputHighlighter {
+			from { background:#5264AE; }
+			to 	{ width:0; background:transparent; }
+		}
+		@-moz-keyframes inputHighlighter {
+			from { background:#5264AE; }
+			to 	{ width:0; background:transparent; }
+		}
+		@keyframes inputHighlighter {
+			from { background:#5264AE; }
+			to 	{ width:0; background:transparent; }
+		}
+		#name {
+			margin-top: 30px;
+		}
+		#navbar {
+			position: fixed;
+			top: 0px;
+			background: rgba(255,255,255,0);
+			z-index: 1000;
+		}
+		.message, .dir-item {
+			padding-top:10px;
+			padding-bottom:10px;	
+			height: 130px;
+			overflow: hidden;
+		}
+		.selected {
+			background-color: #bbdefb;
+			cursor: pointer;
+		}
+		.logo {
+			background-color: #d32f2f;
+			padding-top: 10px;
+			padding-bottom: 10px;
+		}
+		.logo2 {
+			padding-top: 1px;
+			padding-bottom: 1px;
+			background-color: #ffffff;
+		}
+		.remove {
+			position: absolute; 
+			top: 5px; 
+			right: 2px; 
+			width: 20px;
+			height: 20px;
+			z-index:999; 
+			background: rgba(224, 69, 69, 1); 
+			border-radius: 20px;
+			text-align: center;
+			vertical-align: middle;
+			color: rgba(255,255,255, 1);
+		}
+		h1 {
+			font-size: 2em;
+		}
+		html {
+			font-family: 'Montserrat', sans-serif;
+		}
+	</style>
+</head>
+<body ng-controller="dirCtrl" id="body">
+	<!-- navbar-fixed-top -->
+	<div class="container" id="navbar">
+		<div class="row">
+			<div class="col-md-12 logo">
+				<img src="/image/uw-crest-wordmark-overlay.svg" style="margin: 0 auto;" height="60">
+			</div>
+			<div class="col-md-12 logo2">
+				<div class="group" id="name"> 
+					<input type="text" ng-model="name" ng-keydown="keydown($event)" ng-change="search(name)" required>
+					<span class="highlight"></span>
+					<span class="bar"></span>
+					<label>Name</label>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container" style="margin-top:173px" id="directory">
+		<div class="row" id="dir-list" style="margin-left: 0; margin-right: 0; margin-bottom: 15px;">
+			<div class="col-md-12" ng-if='message' class="message">
+				<p>{{message}}</p>
+			</div>
+			<div class="dir-item col-xs-6" ng-repeat='person in persons track by $index' ng-click="redirect(person)" ng-class="{'selected' : $index == selected}" ng-mouseenter="hover($index)" id="person-{{$index}}">
+				<div ng-if="$index == selected && person.history" ng-click="remove($index); $event.stopPropagation();" class="remove">x</div>
+				<h5 style="text-align: center;">{{person.name}}<span ng-if="person.aka"> ({{person.aka}})</span></h5>
+				<h6 style="text-align: center;">{{person.email}}</h6>
+				<p style="text-align: center;">{{person.phone}}</p>
+			</div>
+		</div>
+	</div>
+
+
+	<script type="text/javascript" src="/js/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/js/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/js/app/app.js"></script>
+    <script type="text/javascript" src="/js/app/dirCtrl.js"></script>
+    <script type="text/javascript" src="/js/app/dirStorage.js"></script>
+
+</body>
+</html>
